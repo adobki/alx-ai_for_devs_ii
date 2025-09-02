@@ -8,8 +8,8 @@ export function Navbar() {
         <nav className="flex gap-4 text-sm">
           <Link href="/polls">Polls</Link>
           <Link href="/polls/new">Create</Link>
-          <Link href="/sign-in">Sign in</Link>
           <Link href="/about">About</Link>
+          <Link href="/sign-in">Sign in</Link>
         </nav>
       </div>
     </header>
