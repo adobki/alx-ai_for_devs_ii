@@ -1,6 +1,6 @@
 # ALX Polly
 
-Scaffold for a Next.js App Router polling app with Tailwind, shadcn-style UI, and Supabase.
+A Next.js App Router polling app with Tailwind, shadcn-style UI, and Supabase.
 
 Setup
 - npm install
