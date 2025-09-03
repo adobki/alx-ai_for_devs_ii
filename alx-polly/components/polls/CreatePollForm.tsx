@@ -30,8 +30,6 @@ export function CreatePollForm() {
     setIsSubmitting(true);
     try {
       formData.set('question', question);
-      // Clear any preexisting options in the formData (precaution)
-      // Append current options
       trimmedOptions.forEach((opt) => formData.append('options', opt));
       await createPollAction(formData);
     } catch (e: unknown) {

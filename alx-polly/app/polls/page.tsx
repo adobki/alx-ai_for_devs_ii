@@ -1,38 +1,34 @@
-type SamplePoll = { id: string; question: string; options: { label: string; votes: number }[] };
-
-function generateSamplePolls(): SamplePoll[] {
-  const examples: Array<Omit<SamplePoll, 'id'>> = [
-    { question: 'Best JS framework in 2025?', options: [{ label: 'Next.js', votes: 0 }, { label: 'SvelteKit', votes: 0 }, { label: 'Nuxt', votes: 0 }] },
-    { question: 'Favorite database?', options: [{ label: 'Postgres', votes: 0 }, { label: 'SQLite', votes: 0 }, { label: 'MySQL', votes: 0 }] },
-    { question: 'Tabs or spaces?', options: [{ label: 'Tabs', votes: 0 }, { label: 'Spaces', votes: 0 }] },
-  ];
-  return examples.map((p, i) => ({
-    id: String(i + 1),
-    question: p.question,
-    options: p.options.map((o) => ({ ...o, votes: Math.floor(Math.random() * 200) }))
-  }));
-}
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+import { PollCard } from '@/components/polls/PollCard';
 
 export default async function PollsIndexPage() {
-  const polls = generateSamplePolls();
+  const { createSupabaseServerClient } = await import('@/lib/supabase/server');
+  const { ensureSchema } = await import('@/lib/db/schema');
+  const check = await ensureSchema();
+  if (!('ok' in check && check.ok)) {
+    const { SetupNotice } = await import('@/components/db/SetupNotice');
+    return (
+      <section className="space-y-6">
+        <h1 className="text-2xl font-semibold">Your polls</h1>
+        <SetupNotice reason={'reason' in check ? check.reason : undefined} />
+      </section>
+    );
+  }
+  const supabase = createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from('polls')
+    .select('id, question, created_at, options:poll_options(id,label), votes:votes(id,option_id)')
+    .order('created_at', { ascending: false });
+  if (error) {
+    throw new Error(error.message || 'Failed to load polls');
+  }
   return (
     <section className="space-y-6">
       <h1 className="text-2xl font-semibold">Your polls</h1>
-      <ul className="space-y-3">
-        {polls.map((p) => (
-          <li key={p.id} className="rounded-md border p-3">
-            <a href={`/polls/${p.id}`} className="font-medium hover:underline">
-              {p.question}
-            </a>
-            <div className="mt-2 grid grid-cols-1 gap-1 text-sm text-gray-600 sm:grid-cols-2">
-              {p.options.map((o, idx) => (
-                <div key={idx} className="flex justify-between">
-                  <span>{o.label}</span>
-                  <span>{o.votes} votes</span>
-                </div>
-              ))}
-            </div>
-          </li>
+      <ul className="grid gap-4 justify-items-center grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        {(data ?? []).map((p: any) => (
+          <PollCard key={p.id} pollId={p.id} question={p.question} options={p.options ?? []} votes={p.votes ?? []} />
         ))}
       </ul>
     </section>

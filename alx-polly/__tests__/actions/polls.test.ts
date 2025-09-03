@@ -1,4 +1,4 @@
-import { createPollAction, submitVoteAction } from '../../app/actions/polls.ts'
+import { createPollAction, submitVoteAction } from '@/app/actions/polls.ts'
 
 describe('Poll Actions', () => {
   describe('createPollAction', () => {

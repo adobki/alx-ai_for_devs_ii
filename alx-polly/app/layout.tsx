@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Navbar } from '@/components/navbar';
+import { AuthProvider } from '@/components/auth/AuthProvider';
 
 export const metadata: Metadata = {
   title: 'ALX Polly',
@@ -13,8 +14,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-dvh bg-white text-gray-900">
-        <Navbar />
-        <main className="mx-auto max-w-3xl p-4">{children}</main>
+        <AuthProvider>
+          <Navbar />
+          <main className="mx-auto max-w-3xl p-4">{children}</main>
+        </AuthProvider>
       </body>
     </html>
   );
